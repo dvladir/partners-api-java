@@ -10,7 +10,7 @@ pipeline {
             agent {
                 docker {
                     image 'maven:3.8.6-openjdk-18'
-                    args '-net=host'
+                    args '--net=host'
                     reuseNode true
                 }
             }
