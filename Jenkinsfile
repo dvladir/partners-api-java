@@ -25,11 +25,11 @@ pipeline {
                 DEPLOY_PASS = credentials('deploy-pass')
             }
             steps {
-                sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=partners-api-java.tar --file Dockerfile.deploy .'
-                sh 'gzip partners-api-java.tar'
+                sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=partners-api.tar --file Dockerfile.deploy .'
+                sh 'gzip partners-api.tar'
                 sh 'echo ${DEPLOY_PASS} >> pass'
-                sh 'sshpass -Ppassphrase -f ./pass rsync ./partners-api-java.tar.gz ${DEPLOY_HOST}:~/partners-deploy/partners-api-java.tar.gz'
-                // sh 'sshpass -Ppassphrase -f ./pass ssh ${DEPLOY_HOST} cd \\~/partners-deploy \\&\\& ./scripts/recreate.sh ./partners-api.tar.gz dvladir:partners-api api'
+                sh 'sshpass -Ppassphrase -f ./pass rsync ./partners-api.tar.gz ${DEPLOY_HOST}:~/partners-deploy/partners-api.tar.gz'
+                sh 'sshpass -Ppassphrase -f ./pass ssh ${DEPLOY_HOST} cd \\~/partners-deploy \\&\\& ./scripts/recreate.sh ./partners-api.tar.gz dvladir:partners-api api'
                 sh 'rm ./pass'
             }
         }
