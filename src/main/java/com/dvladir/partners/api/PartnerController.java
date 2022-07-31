@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
+@CrossOrigin
 @RestController
 @RequestMapping("partner")
 public class PartnerController {
@@ -31,10 +32,14 @@ public class PartnerController {
 
   @Operation(summary = "Search partners")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Search result", useReturnTypeSchema = true),
+      @ApiResponse(
+          responseCode = "200",
+          description = "Search result",
+          useReturnTypeSchema = true
+      ),
   })
   @ApiInternalError
-  @GetMapping("search")
+  @GetMapping(value = "search", produces = "application/json")
   public PageDataDto<PartnerHeaderDto> search(
       @RequestParam(required = false) String query,
       @RequestParam(defaultValue = "0") int pageNum,
@@ -59,7 +64,7 @@ public class PartnerController {
   })
   @ApiInternalError
   @ApiPartnerNotFound
-  @GetMapping("{partnerId}")
+  @GetMapping(path = "{partnerId}", produces = "application/json")
   public PartnerInfoDto getPartner(@PathVariable UUID partnerId) {
     final PartnerInfo partner = partnerService.getPartnerById(partnerId);
     return PartnerMapper.INSTANCE.partnerInfoToPartnerDto(partner);
@@ -71,7 +76,7 @@ public class PartnerController {
   })
   @ApiInternalError
   @ApiValidationError
-  @PostMapping()
+  @PostMapping(produces = "application/json")
   public IdentifyDto createPartner(@RequestBody PartnerInfoDto partnerInfoDto) {
     final PartnerInfo partner = PartnerMapper.INSTANCE.partnerInfoDtoToPartner(partnerInfoDto);
     final UUID partnerId = partnerService.addPartner(partner);

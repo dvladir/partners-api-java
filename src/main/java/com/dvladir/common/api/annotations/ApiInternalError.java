@@ -1,5 +1,6 @@
 package com.dvladir.common.api.annotations;
 
+import com.dvladir.common.api.dto.ErrorResponseDto;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.SchemaProperty;
@@ -24,7 +25,10 @@ import static java.lang.annotation.ElementType.*;
                 schema = @Schema(defaultValue = "INTERNAL_ERROR")
             ),
         })
-    })
+    }),
+    @ApiResponse(description = "Error Object", content = {
+        @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponseDto.class))
+    }),
 })
 public @interface ApiInternalError {
 }
