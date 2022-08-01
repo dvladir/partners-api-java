@@ -11,7 +11,11 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+import org.springframework.lang.Nullable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,6 +24,24 @@ import java.util.stream.Stream;
 public interface PartnerMapper {
 
   final PartnerMapper INSTANCE = Mappers.getMapper(PartnerMapper.class);
+
+  final static String DATE_FORMAT = "dd/MM/yyyy";
+
+  @Named("stringToDate")
+  public static Date stringToDate(@Nullable String strDate) throws ParseException {
+      if (strDate == null || strDate.trim().isEmpty()) {
+        return null;
+      }
+      return new SimpleDateFormat(DATE_FORMAT).parse(strDate);
+  }
+
+  @Named("dateToString")
+  public static String dateToString(@Nullable Date date) {
+      if (date == null) {
+        return null;
+      }
+      return new SimpleDateFormat(DATE_FORMAT).format(date);
+  }
 
   @Named("fullAddress")
   public static String fullAddress(Address address) {
@@ -63,12 +85,12 @@ public interface PartnerMapper {
   ContactInfo contactInfoDtoToContactInfo(ContactInfoDto contactInfoDto);
 
   @Mappings({
-      @Mapping(target = "birthDate", dateFormat = "dd/MM/yyyy")
+      @Mapping(target = "birthDate", qualifiedByName = "dateToString")
   })
   PersonalInfoDto personalInfoToPersonalInfoDto(PersonalInfo personalInfo);
 
   @Mappings({
-      @Mapping(target = "birthDate", dateFormat = "dd/MM/yyyy")
+      @Mapping(target = "birthDate", qualifiedByName = "stringToDate")
   })
   PersonalInfo personalInfoDtoToPersonalInfo(PersonalInfoDto personalInfoDto);
 

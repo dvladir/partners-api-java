@@ -28,7 +28,7 @@ public class SortFieldDto implements Serializable {
   }
 
   public static @Nullable SortFieldDto parse(@Nullable String sort) throws ApiException {
-    if (sort == null) {
+    if (sort == null || sort.isEmpty()) {
       return null;
     }
     final String[] parts = sort.split(";");
