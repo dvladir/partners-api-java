@@ -19,6 +19,18 @@ pipeline {
                 sh 'mvn deploy'
             }
         }
+        stage('Prepare DB') {
+            environment {
+                DEPLOY_HOST = credentials('deploy-host')
+                DEPLOY_PASS = credentials('deploy-pass')
+            }
+            steps {
+                sh 'echo ${DEPLOY_PASS} >> pass'
+                sh 'sshpass -Ppassphrase -f ./pass rsync -rv ./sql/ ${DEPLOY_HOST}:~/partners-deploy/sql'
+                sh 'sshpass -Ppassphrase -f ./pass ssh ${DEPLOY_HOST} cd \\~/partners-deploy \\&\\& ./scripts/migrate.sh'
+                sh 'rm ./pass'
+            }
+        }
         stage('Deploy') {
             environment {
                 DEPLOY_HOST = credentials('deploy-host')
