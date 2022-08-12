@@ -15,8 +15,9 @@ pipeline {
                 }
             }
             steps {
-                sh 'mvn clean'
-                sh 'mvn deploy'
+                configFileProvider([configFile(fileId: 'maven-local', variable: 'MAVEN_SETTINGS')]) {
+                    sh 'mvn -s $MAVEN_SETTINGS clean deploy'
+                }
             }
         }
         stage('Prepare DB') {
