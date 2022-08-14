@@ -15,9 +15,18 @@ pipeline {
                 }
             }
             steps {
+                withCredentials([
+                    file(credentialsId: 'jvm.config' variable: 'JVM_CONFIG'),
+                    file(credentialsId: 'dvladir.work.jks' variable: 'JKS_STORE'),
+                ]) {
+                    sh 'mkdir .mvn'
+                    sh 'mv $JVM_CONFIG .mvn/jvm.config'
+                    sh 'mv $JKS_STORE .mvn/dvladir.jks.store'
+                }
                 configFileProvider([configFile(fileId: 'maven-local', variable: 'MAVEN_SETTINGS')]) {
                     sh 'mvn -s $MAVEN_SETTINGS clean deploy'
                 }
+                sh 'rm -rf .mvn'
             }
         }
         stage('Prepare DB') {
