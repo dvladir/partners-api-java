@@ -21,8 +21,7 @@ pipeline {
                 ]) {
                     sh 'mkdir .mvn'
                     sh 'mv $JVM_CONFIG .mvn/jvm.config'
-                    sh 'mv $JKS_STORE .mvn/dvladir.jks.store'
-                    sh 'ls -a'
+                    sh 'mv $JKS_STORE .mvn/dvladir.work.jks'
                 }
                 configFileProvider([configFile(fileId: 'maven-local', variable: 'MAVEN_SETTINGS')]) {
                     sh 'mvn -s $MAVEN_SETTINGS clean deploy'
