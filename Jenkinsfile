@@ -16,8 +16,8 @@ pipeline {
             }
             steps {
                 withCredentials([
-                    file(credentialsId: 'jvm.config' variable: 'JVM_CONFIG'),
-                    file(credentialsId: 'dvladir.work.jks' variable: 'JKS_STORE'),
+                    file(credentialsId: 'jvm.config', variable: 'JVM_CONFIG'),
+                    file(credentialsId: 'dvladir.work.jks', variable: 'JKS_STORE'),
                 ]) {
                     sh 'mkdir .mvn'
                     sh 'mv $JVM_CONFIG .mvn/jvm.config'
