@@ -47,6 +47,8 @@ pipeline {
                 DEPLOY_PASS = credentials('deploy-pass')
             }
             steps {
+                sh 'echo Branch name: ${BRANCH_NAME}'
+                sh 'echo Tag name: ${TAG_NAME}'
                 sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=partners-api.tar --file Dockerfile.deploy .'
                 sh 'gzip partners-api.tar'
                 sh 'echo ${DEPLOY_PASS} >> pass'
