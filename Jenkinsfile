@@ -10,6 +10,7 @@ pipeline {
             agent {
                 docker {
                     image 'docker.dvladir.work/library/maven:3.8.6-openjdk-18'
+                    label 'maven'
                     args '--net=host'
                     reuseNode true
                 }
@@ -33,7 +34,8 @@ pipeline {
             agent {
                 docker {
                     image 'docker.dvladir.work/flyway/flyway:7.14.0-alpine'
-                    args '--net=host'
+                    label 'flyway'
+                    args '--entrypoint=\'\' --net=host'
                     reuseNode true
                 }
             }
