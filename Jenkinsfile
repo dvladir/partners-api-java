@@ -34,8 +34,8 @@ pipeline {
             agent {
                 docker {
                     image 'docker.dvladir.work/flyway/flyway:7.14.0-alpine'
-                    label 'flyway'
                     args '-v $WORKSPACE/sql:/flyway/sql -v --entrypoint=\'\' --net=host'
+                    reuseNode true
                 }
             }
             steps {
