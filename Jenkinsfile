@@ -31,9 +31,11 @@ pipeline {
         }
         stage('Prepare DB') {
             agent {
-                image 'docker.dvladir.work/flyway/flyway:8.5.1'
-                args '--net=host -v $WORKSPACE/sql:/flyway/sql --entrypoint /bin/bash'
-                reuseNode true
+                docker {
+                  image 'docker.dvladir.work/flyway/flyway:8.5.1'
+                  args '--net=host -v $WORKSPACE/sql:/flyway/sql --entrypoint /bin/bash'
+                  reuseNode true
+                }
             }
             steps {
                 configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'flyway.conf')]) {
