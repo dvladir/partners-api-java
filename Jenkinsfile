@@ -10,7 +10,6 @@ pipeline {
             agent {
                 docker {
                     image 'docker.dvladir.work/library/maven:3.8.6-openjdk-18'
-                    label 'maven'
                     args '--net=host'
                     reuseNode true
                 }
@@ -34,12 +33,13 @@ pipeline {
             agent {
                 docker {
                     image 'docker.dvladir.work/flyway/flyway:7.14.0-alpine'
-                    args '-v $WORKSPACE/sql:/flyway/sql -v --entrypoint=\'\' --net=host'
+                    args '-v $WORKSPACE/sql:/flyway/sql -v --entrypoint=\'/bin/sh\' --net=host'
                     reuseNode true
                 }
             }
             steps {
                 configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: '$WORKSPACE/flyway.conf')]) {
+                    sh 'flyway --version'
                     sh 'flyway -configFiles=$WORKSPACE/flyway.conf -connectRetries=60 migrate'
                 }
             }
