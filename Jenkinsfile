@@ -32,6 +32,7 @@ pipeline {
         stage('Prepare DB') {
             steps {
                 configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'conf/flyway.conf')]) {
+                    sh 'cat conf/flyway.conf'
                     sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
                     sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 migrate'
                     sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 validate'
