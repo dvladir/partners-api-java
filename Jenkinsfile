@@ -33,9 +33,9 @@ pipeline {
             steps {
                 configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'conf/flyway.conf')]) {
                     sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
-                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 migrate -configFiles=/flyway/conf/flyway.config'
-                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 validate -configFiles=/flyway/conf/flyway.config'
-                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 info -configFiles=/flyway/conf/flyway.config'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 migrate -configFiles=/flyway/conf/flyway.conf'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 validate -configFiles=/flyway/conf/flyway.conf'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 info -configFiles=/flyway/conf/flyway.conf'
                 }
             }
         }
