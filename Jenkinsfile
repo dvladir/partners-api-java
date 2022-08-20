@@ -35,14 +35,12 @@ pipeline {
                 docker {
                     image 'docker.dvladir.work/flyway/flyway:7.14.0-alpine'
                     label 'flyway'
-                    args '-v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf --entrypoint=\'\' --net=host'
-                    reuseNode true
+                    args '-v $WORKSPACE/sql:/flyway/sql -v --entrypoint=\'\' --net=host'
                 }
             }
             steps {
-                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: './conf/flyway.conf')]) {
-                    sh 'ls ./conf'
-                    sh 'flyway -connectRetries=60 migrate'
+                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: '$WORKSPACE/flyway.conf')]) {
+                    sh 'flyway -configFiles=$WORKSPACE/flyway.conf -connectRetries=60 migrate'
                 }
             }
         }
