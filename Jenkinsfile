@@ -9,7 +9,7 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'maven:3.8.6-openjdk-18'
+                    image 'docker.dvladir.work/library/maven:3.8.6-openjdk-18'
                     args '--net=host'
                     reuseNode true
                 }
@@ -30,31 +30,24 @@ pipeline {
             }
         }
         stage('Prepare DB') {
-            environment {
-                DEPLOY_HOST = credentials('deploy-host')
-                DEPLOY_PASS = credentials('deploy-pass')
+            agent {
+                docker {
+                    image 'docker.dvladir.work/flyway/flyway:7.14.0-alpine'
+                    args '--net=host'
+                    reuseNode true
+                }
             }
             steps {
-                sh 'echo ${DEPLOY_PASS} >> pass'
-                sh 'sshpass -Ppassphrase -f ./pass rsync -rv ./sql/ ${DEPLOY_HOST}:~/partners-deploy/sql'
-                sh 'sshpass -Ppassphrase -f ./pass ssh ${DEPLOY_HOST} cd \\~/partners-deploy \\&\\& ./scripts/migrate.sh'
-                sh 'rm ./pass'
+                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: './flyway.config')]) {
+                    sh 'flyway -configFiles=./flyway.config -locations=filesystem:./sql -connectRetries=60 migrate'
+                }
             }
         }
         stage('Deploy') {
-            environment {
-                DEPLOY_HOST = credentials('deploy-host')
-                DEPLOY_PASS = credentials('deploy-pass')
-            }
             steps {
                 sh 'echo Branch name: ${BRANCH_NAME}'
-                sh 'echo Tag name: ${TAG_NAME}'
-                sh 'DOCKER_BUILDKIT=1 docker build --output type=tar,dest=partners-api.tar --file Dockerfile.deploy .'
-                sh 'gzip partners-api.tar'
-                sh 'echo ${DEPLOY_PASS} >> pass'
-                sh 'sshpass -Ppassphrase -f ./pass rsync ./partners-api.tar.gz ${DEPLOY_HOST}:~/partners-deploy/partners-api.tar.gz'
-                sh 'sshpass -Ppassphrase -f ./pass ssh ${DEPLOY_HOST} cd \\~/partners-deploy \\&\\& ./scripts/recreate.sh ./partners-api.tar.gz dvladir:partners-api api'
-                sh 'rm ./pass'
+                sh 'docker build --t docker-push.dvladir.work/partners-api:latest --file Dockerfile.deploy .'
+                sh 'docker push docker-push.dvladir.work/parthers-api:latest'
             }
         }
     }
