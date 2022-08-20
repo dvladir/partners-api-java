@@ -35,7 +35,7 @@ pipeline {
                 docker {
                     image 'docker.dvladir.work/flyway/flyway:7.14.0-alpine'
                     label 'flyway'
-                    args '-v .sql:/flyway:sql --entrypoint=\'\' --net=host'
+                    args '-v .sql:/flyway/sql --entrypoint=\'\' --net=host'
                     reuseNode true
                 }
             }
