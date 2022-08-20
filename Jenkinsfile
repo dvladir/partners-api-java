@@ -31,11 +31,11 @@ pipeline {
         }
         stage('Prepare DB') {
             steps {
-                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: '$WORKSPACE/conf/flyway.conf')]) {
-                    sh 'docker run -rm docker.dvladir.work/flyway/flyway:7.14.0-alpine version'
-                    sh 'docker run -rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine migrate'
-                    sh 'docker run -rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine validate'
-                    sh 'docker run -rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine info'
+                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'conf/flyway.conf')]) {
+                    sh 'docker run --rm docker.dvladir.work/flyway/flyway:7.14.0-alpine version'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine migrate'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine validate'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine info'
                 }
             }
         }
