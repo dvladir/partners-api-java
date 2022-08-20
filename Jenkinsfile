@@ -30,17 +30,12 @@ pipeline {
             }
         }
         stage('Prepare DB') {
-            agent {
-                docker {
-                    image 'docker.dvladir.work/flyway/flyway:7.14.0-alpine'
-                    args '-v $WORKSPACE/sql:/flyway/sql -v --entrypoint=\'/bin/sh\' --net=host'
-                    reuseNode true
-                }
-            }
             steps {
-                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: '$WORKSPACE/flyway.conf')]) {
-                    sh 'flyway --version'
-                    sh 'flyway -configFiles=$WORKSPACE/flyway.conf -connectRetries=60 migrate'
+                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: '$WORKSPACE/conf/flyway.conf')]) {
+                    sh 'docker run -rm docker.dvladir.work/flyway/flyway:7.14.0-alpine version'
+                    sh 'docker run -rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine migrate'
+                    sh 'docker run -rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine validate'
+                    sh 'docker run -rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:7.14.0-alpine info'
                 }
             }
         }
