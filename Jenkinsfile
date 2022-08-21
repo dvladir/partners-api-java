@@ -32,14 +32,13 @@ pipeline {
         stage('Prepare DB') {
             environment {
                 DB_CREDS=credentials('db_creds')
+                DB_URL=credentials('db_url')
             }
             steps {
-                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'conf/flyway.config')]) {
-                    sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
-                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW migrate'
-                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW validate'
-                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW info'
-                }
+               sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
+               sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL migrate'
+               sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL validate'
+               sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL info'
             }
         }
         stage('Deploy') {
