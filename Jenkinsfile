@@ -35,7 +35,6 @@ pipeline {
             }
             steps {
                 configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'conf/flyway.config')]) {
-                    sh 'cat $WORKSPACE/flyway.conf'
                     sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
                     sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW migrate'
                     sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW validate'
