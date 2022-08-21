@@ -5,6 +5,10 @@ pipeline {
 
     agent any
 
+    environment {
+        BRANCH=$(echo $BRANCH_NAME | sed --expression='s/feat\///g')
+    }
+
     stages {
         stage('Build') {
             agent {
@@ -32,21 +36,21 @@ pipeline {
         stage('Prepare DB') {
             environment {
                 DB_CREDS=credentials('db_creds')
-                DB_URL="jdbc:postgresql://db.dvladir.work:5432/partners_db_test"
             }
             steps {
-                sh 'echo $DB_URL'
-                sh 'docker run --net=host --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
-                sh 'docker run --net=host --rm -v $WORKSPACE/sql:/flyway/sql docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL migrate'
-                sh 'docker run --net=host --rm -v $WORKSPACE/sql:/flyway/sql docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL validate'
-                sh 'docker run --net=host --rm -v $WORKSPACE/sql:/flyway/sql docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL info'
+                withCredentials([string(credentialsId: "db_conn_${env.BRANCH}", variable: 'DB_URL')]) {
+                    sh 'docker run --net=host --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
+                    sh 'docker run --net=host --rm -v $WORKSPACE/sql:/flyway/sql docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL migrate'
+                    sh 'docker run --net=host --rm -v $WORKSPACE/sql:/flyway/sql docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL validate'
+                    sh 'docker run --net=host --rm -v $WORKSPACE/sql:/flyway/sql docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL info'
+                }
             }
         }
         stage('Deploy') {
             steps {
                 sh 'echo Branch name: ${BRANCH_NAME}'
-                sh 'docker build --tag docker-push.dvladir.work/partners-api:latest --file Dockerfile.deploy .'
-                sh 'docker push docker-push.dvladir.work/partners-api:latest'
+                sh 'docker build --tag docker-push.dvladir.work/partners/$BRANCH/partners-api:latest --file Dockerfile.deploy .'
+                sh 'docker push docker-push.dvladir.work/partners/$BRANCH/partners-api:latest'
             }
         }
     }
