@@ -19,6 +19,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'echo BRANCH: $BRANCH'
                 withCredentials([
                     file(credentialsId: 'jvm.config', variable: 'JVM_CONFIG'),
                     file(credentialsId: 'dvladir.work.jks', variable: 'JKS_STORE'),
