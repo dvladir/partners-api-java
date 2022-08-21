@@ -39,6 +39,7 @@ pipeline {
             }
             steps {
                 configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'flyway.conf')]) {
+                    sh 'chmod 755 /flyway/flyway'
                     sh 'flyway version'
                     sh 'flyway migrate -configFiles=flyway.conf'
                     sh 'flyway validate -configFiles=flyway.conf'
