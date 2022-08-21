@@ -6,7 +6,7 @@ pipeline {
     agent any
 
     environment {
-        BRANCH="$(echo ${BRANCH_NAME} | sed --expression='s/feat\///g')"
+        BRANCH="${BRANCH_NAME.replaceAll('feat/', '')}"
     }
 
     stages {
