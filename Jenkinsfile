@@ -32,7 +32,7 @@ pipeline {
         stage('Prepare DB') {
             environment {
                 DB_CREDS=credentials('db_creds')
-                DB_URL=jdbc:postgresql://db.dvladir.work:5432/partners_db_test
+                DB_URL="jdbc:postgresql://db.dvladir.work:5432/partners_db_test"
             }
             steps {
                 sh 'echo $DB_URL'
