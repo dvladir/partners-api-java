@@ -49,7 +49,6 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'echo Branch name: ${BRANCH_NAME}'
                 sh 'docker build --tag docker-push.dvladir.work/partners/$BRANCH/partners-api:latest --file Dockerfile.deploy .'
                 sh 'docker push docker-push.dvladir.work/partners/$BRANCH/partners-api:latest'
             }
