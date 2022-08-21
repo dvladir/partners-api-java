@@ -32,10 +32,10 @@ pipeline {
         stage('Prepare DB') {
             environment {
                 DB_CREDS=credentials('db_creds')
-                DB_URL=credentials('db_url')
+                DB_URL=jdbc:postgresql://db.dvladir.work:5432/partners_db_test
             }
             steps {
-                sh("echo DB_URL: ${DB_URL}")
+                sh 'echo $DB_URL'
                 sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
                 sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL migrate'
                 sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL validate'
