@@ -30,20 +30,16 @@ pipeline {
             }
         }
         stage('Prepare DB') {
-            agent {
-                docker {
-                    image 'docker.dvladir.work/custom/flyway:8.5.1'
-                    args '--net=host'
-                    reuseNode true
-                }
+            environment {
+                DB_CREDS=credentials('db_creds')
             }
             steps {
-                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'flyway.conf')]) {
-                    sh 'chmod 755 /flyway/flyway'
-                    sh 'flyway version'
-                    sh 'flyway migrate -configFiles=flyway.conf'
-                    sh 'flyway validate -configFiles=flyway.conf'
-                    sh 'flyway info -configFiles=flyway.conf'
+                configFileProvider([configFile(fileId: 'deploy-env-flyway', targetLocation: 'conf/flyway.config')]) {
+                    sh 'cat $WORKSPACE/flyway.conf'
+                    sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW migrate'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW validate'
+                    sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v $WORKSPACE/conf:/flyway/conf docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW info'
                 }
             }
         }
