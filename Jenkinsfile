@@ -34,7 +34,7 @@ pipeline {
                 DB_CREDS=credentials('db_creds')
             }
             steps {
-               configFileProvider([configFile(fileId: 'db_conn_url' variable: 'DB_URL')]) {
+               configFileProvider([configFile(fileId: 'db_conn_url', variable: 'DB_URL')]) {
                     sh 'echo DB_URL: $DB_URL'
                     sh 'docker run --rm docker.dvladir.work/flyway/flyway:8.5.1 version'
                     sh 'docker run --rm -v $WORKSPACE/sql:/flyway/sql -v docker.dvladir.work/flyway/flyway:8.5.1 -user=$DB_CREDS_USR -password=$DB_CREDS_PSW -url=$DB_URL migrate'
