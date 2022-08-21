@@ -6,7 +6,7 @@ pipeline {
     agent any
 
     environment {
-        BRANCH="${BRANCH_NAME.replaceAll('feat/', '')}"
+        BRANCH="${BRANCH_NAME.replaceAll('feat/', '').toLowerCase()}"
     }
 
     stages {
