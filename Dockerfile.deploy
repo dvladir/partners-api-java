@@ -1,7 +1,8 @@
-FROM openjdk:18-jdk-oracle
+FROM docker.dvladir.work/custom/jdk:18
 
 WORKDIR /usr/src/app
 
 ARG JAR_FILE=target/*.jar
 
 COPY ${JAR_FILE} ./app.jar
+COPY sql sql/
