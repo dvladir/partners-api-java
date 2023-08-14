@@ -1,0 +1,26 @@
+version: "3.1"
+services:
+  db:
+    build:
+      context: db
+      dockerfile: db.dockerfile
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+       - PGDATA=/var/lib/postgresql/data/pgdata
+       - POSTGRES_USER=mdb-user
+       - POSTGRES_PASSWORD=mdb-password
+  flyway:
+    build:
+      context: flyway
+      dockerfile: flyway.dockerfile
+    working_dir: /usr/src/app
+    command: flyway -configFiles=/flyway/conf/flyway.config -locations=filesystem:/usr/src/app/sql -connectRetries=60 migrate
+    volumes:
+      - ./sql:/usr/src/app/sql
+      - ./flyway/flyway.config:/flyway/conf/flyway.config
+    depends_on:
+      - db
